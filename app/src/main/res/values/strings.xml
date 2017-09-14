@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">WildDogDoctorDemo</string>
+    <string name="app_name">医生</string>
     <string name="app_id">wd7068226413lqkhkx</string>
     <string name="video_app_id">wd8362968907ehjajp</string>
     <string name="sync_url">https://wd7068226413lqkhkx.wilddogio.com</string>
@@ -52,4 +52,6 @@
     <string name="dial">拨号</string>
     <string name="title_activity_main">MainActivity</string>
     <string name="video_history">历史记录</string>
+    <string name="other">其他</string>
+    <string name="main_page">主页</string>
 </resources>

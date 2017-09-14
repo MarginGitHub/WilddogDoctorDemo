@@ -128,6 +128,28 @@ public class AboutMeFragment extends BaseFragment {
         } else {
             Util.setImageView(this, mHeadIv, null);
         }
+        LocalStreamOptions.Dimension videoResolution = ObjectPreference.getObject(getContext(),
+                "video_resolution", LocalStreamOptions.Dimension.class);
+        String resolution = "视频通话分辨率:\t";
+        if (videoResolution != null) {
+            switch (videoResolution) {
+                case DIMENSION_360P:
+                    resolution += "360p";
+                    break;
+                case DIMENSION_480P:
+                    resolution += "480p";
+                    break;
+                case DIMENSION_720P:
+                    resolution += "720p";
+                    break;
+                case DIMENSION_1080P:
+                    resolution += "1080p";
+                    break;
+            }
+        } else {
+            resolution += "480p";
+        }
+        mVideoResolution.setText(resolution);
         mBalanceAccount.setText(String.format("余额: %f元", mUser.getAmount()));
     }
 
@@ -279,7 +301,12 @@ public class AboutMeFragment extends BaseFragment {
         }
 
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-        Uri uri = Uri.fromFile(Util.getHeadImgFile("doctor_avatar.jpg"));
+        Uri uri;
+        if (!isAddAd) {
+            uri = Uri.fromFile(Util.getHeadImgFile("doctor_avatar.jpg"));
+        } else {
+            uri = Uri.fromFile(Util.getHeadImgFile("doctor_banner.jpg"));
+        }
         intent.putExtra(MediaStore.EXTRA_OUTPUT, uri);
         startActivityForResult(intent, CAPTURE_REQUEST_CODE);
     }
@@ -303,31 +330,59 @@ public class AboutMeFragment extends BaseFragment {
                 if (resultCode != -1) {
                     return;
                 }
-                Uri uri = Uri.fromFile(Util.getHeadImgFile("doctor_avatar.jpg"));
-                try {
-                    MediaStore.Images.Media.insertImage(getActivity().getContentResolver(),
-                            uri.getPath(), "doctor_avatar", null);
-                } catch (FileNotFoundException e) {
-                    e.printStackTrace();
-                }
+                if (!isAddAd) {
+                    Uri uri = Uri.fromFile(Util.getHeadImgFile("doctor_avatar.jpg"));
+                    try {
+                        MediaStore.Images.Media.insertImage(getActivity().getContentResolver(),
+                                uri.getPath(), "doctor_avatar", null);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
 //                最后通知图库更新
-                getActivity().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
-                UCrop.of(uri, Uri.fromFile(Util.getHeadImgFile("doctor_avatar_circle.jpg")))
-                        .useSourceImageAspectRatio()
-                        .start(getContext(), this);
+                    getActivity().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
+                    UCrop.of(uri, Uri.fromFile(Util.getHeadImgFile("doctor_avatar_circle.jpg")))
+                            .withAspectRatio(1, 1)
+                            .withMaxResultSize(400, 400)
+                            .start(getContext(), this);
+                } else {
+                    Uri uri = Uri.fromFile(Util.getHeadImgFile("doctor_banner.jpg"));
+                    try {
+                        MediaStore.Images.Media.insertImage(getActivity().getContentResolver(),
+                                uri.getPath(), "doctor_banner", null);
+                    } catch (FileNotFoundException e) {
+                        e.printStackTrace();
+                    }
+//                最后通知图库更新
+                    getActivity().sendBroadcast(new Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, uri));
+                    UCrop.of(uri, Uri.fromFile(Util.getHeadImgFile("doctor_banner_resize.jpg")))
+                            .withAspectRatio(16, 9)
+                            .withMaxResultSize(712, 400)
+                            .start(getContext(), this);
+                }
+
                 break;
             case ALBUM_REQUEST_CODE:
                 if (data == null) {
                     return;
                 }
                 Uri selectUri = data.getData();
-                File imgFile = Util.getHeadImgFile("doctor_avatar_circle.jpg");
-                if (selectUri != null) {
+                if (selectUri == null) {
+                    return;
+                }
+                if (!isAddAd) {
+                    File imgFile = Util.getHeadImgFile("doctor_avatar_circle.jpg");
                     UCrop.of(selectUri, Uri.fromFile(imgFile))
-                            .withMaxResultSize(1080, 1920)
-                            .useSourceImageAspectRatio()
+                            .withAspectRatio(1, 1)
+                            .withMaxResultSize(400, 400)
+                            .start(getContext(), this);
+                } else {
+                    File imgFile = Util.getHeadImgFile("doctor_banner_resize.jpg");
+                    UCrop.of(selectUri, Uri.fromFile(imgFile))
+                            .withAspectRatio(16, 9)
+                            .withMaxResultSize(712, 400)
                             .start(getContext(), this);
                 }
+
             case UCrop.REQUEST_CROP:
                 if (resultCode == RESULT_OK) {
                     final Uri output = UCrop.getOutput(data);
