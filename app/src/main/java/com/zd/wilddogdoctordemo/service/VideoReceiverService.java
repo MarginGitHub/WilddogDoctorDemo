@@ -27,6 +27,7 @@ import com.zd.wilddogdoctordemo.beans.User;
 import com.zd.wilddogdoctordemo.cons.ConversationCons;
 import com.zd.wilddogdoctordemo.net.Net;
 import com.zd.wilddogdoctordemo.storage.ObjectPreference;
+import com.zd.wilddogdoctordemo.storage.memory.ObjectProvider;
 import com.zd.wilddogdoctordemo.ui.doctor.VideoReceiverActivity;
 import com.zd.wilddogdoctordemo.utils.Util;
 
@@ -101,6 +102,7 @@ public class VideoReceiverService extends Service implements Conversation.Listen
     @Override
     public void onDestroy() {
         mWilddogVideo.stop();
+        Net.instance().removeRequest(VideoReceiverService.class.getSimpleName());
         super.onDestroy();
     }
 
@@ -203,20 +205,21 @@ public class VideoReceiverService extends Service implements Conversation.Listen
     private void uploadVideoConversationRecord() {
         long duration = System.currentTimeMillis() / 1000 - mStartTime;
         Net.instance().uploadConversationRecord(mUser.getToken(), mUser.getDoc_id(),
-                mVideoConversation.getRemoteUid(), mStartTime, duration, new Net.OnNext<Result<Object>>() {
+                mVideoConversation.getRemoteUid(), mStartTime, duration, new Net.OnNext<Result<Double>>() {
                     @Override
-                    public void onNext(@NonNull Result<Object> result) {
+                    public void onNext(@NonNull Result<Double> result) {
                         if (result.getCode() == 100) {
-                            Log.d("ConversationRecord", "onNext: " + result.getData());
+                            User user = Util.getUser(getApplicationContext());
+                            user.setAmount(result.getData());
+                            Util.saveUser(getApplicationContext(), user);
                         }
                     }
-                },
-                new Net.OnError() {
+                }, new Net.OnError() {
                     @Override
                     public void onError(@NonNull Throwable e) {
-                        Log.d("ConversationRecord", "onError: " + e.toString());
+                        Log.d(TAG, "onError: " + e);
                     }
-                });
+                }, VideoReceiverService.class.getSimpleName());
     }
 
 

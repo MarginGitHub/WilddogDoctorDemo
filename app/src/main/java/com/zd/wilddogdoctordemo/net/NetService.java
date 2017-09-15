@@ -49,4 +49,10 @@ public interface NetService {
             @Query("userId") String userId, @Query("callId") String docId, @Query("start") long start,
             @Query("duration") long duration );
 
+    @GET("doctor/getAmount")
+    Observable<Result<Double>> getAmount(
+            @Query("ts") String ts, @Query("apiKey") String apiKey, @Query("sign") String sign,
+            @Query("userId") String userId
+    );
+
 }

@@ -321,7 +321,7 @@ public class Net {
     }
 
     public void uploadConversationRecord(final String token, final String userId, String callId, long start, long duration,
-                                              final OnNext<Result<Object>> next, final OnError err) {
+                                              final OnNext<Result<Double>> next, final OnError err, final String id) {
         final String ts = String.valueOf(System.currentTimeMillis() / 1000);
         final String apiKey = "test";
         HashMap<String, String> params = new HashMap<>();
@@ -334,22 +334,76 @@ public class Net {
         params.put("duration", String.valueOf(duration));
         String sign = Util.sign(params);
         mNetService.uploadVideoConversationRecord(ts, apiKey, sign, userId, callId, start, duration)
+                .flatMap(new Function<Result<Object>, ObservableSource<Result<Double>>>() {
+
+                    @Override
+                    public ObservableSource<Result<Double>> apply(@NonNull Result<Object> objectResult) throws Exception {
+                        if (objectResult.getCode() == 100) {
+                            HashMap<String, String> params = new HashMap<>();
+                            String ts = String.valueOf(System.currentTimeMillis() / 1000);
+                            String apiKey = "test";
+                            params.put("ts", ts);
+                            params.put("apiKey", apiKey);
+                            params.put("token", token);
+                            params.put("userId", userId);
+                            String sign = Util.sign(params);
+                            return mNetService.getAmount(ts, apiKey, sign, userId);
+                        } else {
+                            throw new Exception(String.format("code: %d, message: %s", objectResult.getCode(), objectResult.getMsg()));
+                        }
+                    }
+                })
                 .subscribeOn(Schedulers.io())
                 .observeOn(Schedulers.io())
-                .subscribe(new Observer<Result<Object>>() {
+                .subscribe(new Observer<Result<Double>>() {
                     @Override
                     public void onSubscribe(@NonNull Disposable d) {
-
+                        addRequest(id, d);
                     }
 
                     @Override
-                    public void onNext(@NonNull Result<Object> objectResult) {
-                        next.onNext(objectResult);
+                    public void onNext(@NonNull Result<Double> doubleResult) {
+                        next.onNext(doubleResult);
                     }
 
                     @Override
                     public void onError(@NonNull Throwable e) {
                         err.onError(e);
+                    }
+
+                    @Override
+                    public void onComplete() {
+
+                    }
+                });
+    }
+
+    public void getAmount(String token, String userId, final OnNext<Result<Double>> onNext, final OnError onError, final String id) {
+        HashMap<String, String> params = new HashMap<>();
+        String ts = String.valueOf(System.currentTimeMillis() / 1000);
+        String apiKey = "test";
+        params.put("ts", ts);
+        params.put("apiKey", apiKey);
+        params.put("token", token);
+        params.put("userId", userId);
+        String sign = Util.sign(params);
+        mNetService.getAmount(ts, apiKey, sign, userId)
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Observer<Result<Double>>() {
+                    @Override
+                    public void onSubscribe(@NonNull Disposable d) {
+                        addRequest(id, d);
+                    }
+
+                    @Override
+                    public void onNext(@NonNull Result<Double> doubleResult) {
+                        onNext.onNext(doubleResult);
+                    }
+
+                    @Override
+                    public void onError(@NonNull Throwable e) {
+                        onError.onError(e);
                     }
 
                     @Override
