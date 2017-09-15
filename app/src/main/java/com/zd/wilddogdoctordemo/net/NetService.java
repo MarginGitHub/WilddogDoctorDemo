@@ -19,19 +19,19 @@ import retrofit2.http.Query;
 
 public interface NetService {
 
-    @GET("auth/login")
+    @GET("doctor/login")
     Observable<Result<User>> login(
             @Query("ts") String ts, @Query("apiKey") String apiKey, @Query("sign") String sign,
-            @Query("mobile") String mobile, @Query("password") String password, @Query("flag") int flag);
+            @Query("mobile") String mobile, @Query("password") String password);
 
 
-    @GET("auth/register")
+    @GET("doctor/register")
     Observable<Result<User>> register(
             @Query("ts") String ts, @Query("apiKey") String apiKey, @Query("sign") String sign,
             @Query("mobile") String mobile, @Query("password") String password, @Query("ref") String ref);
 
     @Multipart
-    @POST("auth/uploadHead")
+    @POST("doctor/uploadHead")
     Observable<Result<String>> uploadAvatar(
             @Part("ts") RequestBody ts, @Part("apiKey") RequestBody apiKey, @Part("sign") RequestBody sign,
             @Part("userId") RequestBody userId, @Part MultipartBody.Part upfile);

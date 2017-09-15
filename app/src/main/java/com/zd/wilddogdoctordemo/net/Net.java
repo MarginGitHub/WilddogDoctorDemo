@@ -117,19 +117,17 @@ public class Net {
     }
 
     public void login(String mobile, String password, final OnNext<User> next,
-                      final OnError err, String id) {
+                      final OnError err, final String id) {
         String ts = String.valueOf(System.currentTimeMillis() / 1000);
         String apiKey = "test";
-        int flag = 2;
 
         HashMap<String, String> params = new HashMap<>();
         params.put("ts", ts);
         params.put("apiKey", apiKey);
         params.put("mobile", mobile);
         params.put("password", password);
-        params.put("flag", String.valueOf(flag));
         String sign = Util.sign(params);
-        mNetService.login(ts, apiKey, sign, mobile, password, flag)
+        mNetService.login(ts, apiKey, sign, mobile, password)
                 .flatMap(new Function<Result<User>, ObservableSource<User>>() {
                     @Override
                     public ObservableSource<User> apply(@NonNull final Result<User> userResult) throws Exception {
@@ -168,7 +166,7 @@ public class Net {
                 .subscribe(new Observer<User>() {
                     @Override
                     public void onSubscribe(@NonNull Disposable d) {
-
+                        addRequest(id, d);
                     }
 
                     @Override

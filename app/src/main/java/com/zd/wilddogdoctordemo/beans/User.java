@@ -22,7 +22,7 @@ public class User implements Serializable{
      * wilddog_token : eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJhZG1pbiI6ZmFsc2UsImRlYnVnIjpmYWxzZSwidWlkIjoiQkUyQzlFMzBFMzFCNDZFNUIzQzVDNTg1MzU0RTNGRDQiLCJ2IjoxLCJpYXQiOjE1MDQwODY0MTJ9.U40NP1FaUClD8erKbl0wrAOniUljREnVTeAK_y3V82c
      */
 
-    private String user_id;
+    private String doc_id;
     private String mobile;
     private String nick_name;
     private String head_img_url;
@@ -40,12 +40,12 @@ public class User implements Serializable{
     private String wilddogVideoToken;
     private String ad_url;
 
-    public String getUser_id() {
-        return user_id;
+    public String getDoc_id() {
+        return doc_id;
     }
 
-    public void setUser_id(String user_id) {
-        this.user_id = user_id;
+    public void setDoc_id(String doc_id) {
+        this.doc_id = doc_id;
     }
 
     public String getMobile() {

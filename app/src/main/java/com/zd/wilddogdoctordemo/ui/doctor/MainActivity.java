@@ -59,8 +59,5 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-//        if (requestCode == UCrop.REQUEST_CROP) {
-//            mPagerAdapter.getItem(2).onActivityResult(requestCode, resultCode, data);
-//        }
     }
 }

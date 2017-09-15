@@ -159,15 +159,14 @@ public class LoginActivity extends AppCompatActivity implements EasyPermissions.
     private void syncUserData(final User user) {
 //        野狗方面数据的存储
         WilddogSync.goOnline();
-        SyncReference reference;
-        reference = WilddogSync.getInstance()
-                .getReference(getResources()
-                        .getString(R.string.doctors_room));
-        HashMap<String, Object> map = new HashMap();
-        map.put(user.getUser_id(), true);
-        reference.updateChildren(map);
-        reference.child(user.getUser_id()).onDisconnect().removeValue();
-
+        SyncReference reference = WilddogSync.getInstance()
+                .getReference(getResources().getString(R.string.doctors_room));
+        if (reference != null) {
+            HashMap<String, Object> map = new HashMap();
+            map.put(user.getDoc_id(), true);
+            reference.updateChildren(map);
+            reference.child(user.getDoc_id()).onDisconnect().removeValue();
+        }
     }
 
 

@@ -19,7 +19,6 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -54,6 +53,7 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 import io.reactivex.annotations.NonNull;
 
+import static android.R.attr.path;
 import static android.app.Activity.RESULT_OK;
 
 
@@ -115,7 +115,6 @@ public class AboutMeFragment extends BaseFragment {
     @Override
     public void onResume() {
         super.onResume();
-        initViews();
     }
 
 
@@ -242,8 +241,7 @@ public class AboutMeFragment extends BaseFragment {
                     return view;
                 }
             });
-            mAdPopup.create(QMUIDisplayHelper.dp2px(getContext(), 300), QMUIDisplayHelper.dp2px(getContext(), 300),
-                    new AdapterView.OnItemClickListener() {
+            mAdPopup.create(712, 600, new AdapterView.OnItemClickListener() {
                         @Override
                         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
                         }
@@ -382,56 +380,57 @@ public class AboutMeFragment extends BaseFragment {
                             .withMaxResultSize(712, 400)
                             .start(getContext(), this);
                 }
-
+                break;
             case UCrop.REQUEST_CROP:
                 if (resultCode == RESULT_OK) {
                     final Uri output = UCrop.getOutput(data);
-                    if (output != null && output.getPath() != null) {
-                        if (!isAddAd) {
-                            Net.instance().uploadDoctorAvatar(mUser.getToken(), mUser.getUser_id(), output.getPath(), new Net.OnNext<Result<String>>() {
-                                        @Override
-                                        public void onNext(@NonNull Result<String> result) {
-                                            if (result.getCode() == 100) {
-                                                Util.setAvatarView(getContext(), mHeadIv, output);
-                                                String url = result.getData();
-                                                mUser.setHead_img_url(url);
-                                                Util.saveUser(getContext(), mUser);
-                                                Login login = ObjectPreference.getObject(getContext(), Login.class);
-                                                login.setAvatarUrl(url);
-                                                ObjectPreference.saveObject(getContext(), login);
-                                            }
+                    if (output == null || TextUtils.isEmpty(output.getPath())) {
+                        return;
+                    }
+                    if (!isAddAd) {
+                        Net.instance().uploadDoctorAvatar(mUser.getToken(), mUser.getDoc_id(), output.getPath(), new Net.OnNext<Result<String>>() {
+                                    @Override
+                                    public void onNext(@NonNull Result<String> result) {
+                                        if (result.getCode() == 100) {
+                                            String url = result.getData();
+                                            Util.setAvatarView(getContext(), mHeadIv, NetServiceConfig.HEAD_IMAGE_BASE_URL + url);
+                                            mUser.setHead_img_url(url);
+                                            Util.saveUser(getContext(), mUser);
+                                            Login login = ObjectPreference.getObject(getContext(), Login.class);
+                                            login.setAvatarUrl(url);
+                                            ObjectPreference.saveObject(getContext(), login);
                                         }
-                                    },
-                                    new Net.OnError() {
-                                        @Override
-                                        public void onError(@NonNull Throwable e) {
-                                            Log.d("uploadHead", "onError: " + e.toString());
+                                    }
+                                },
+                                new Net.OnError() {
+                                    @Override
+                                    public void onError(@NonNull Throwable e) {
+                                        Log.d("uploadHead", "onError: " + e.toString());
+                                    }
+                                }, AboutMeFragment.class.getSimpleName());
+                    } else {
+                        Net.instance().uploadDoctorAd(mUser.getToken(), mUser.getDoc_id(), output.getPath(), new Net.OnNext<Result<String>>() {
+                                    @Override
+                                    public void onNext(@NonNull Result<String> result) {
+                                        if (result.getCode() == 100) {
+                                            mUser.setAd_url(result.getData());
+                                            ObjectProvider.sharedInstance().set(mUser);
+                                            Map<String, Object> param = new HashMap<>();
+                                            param.put(mUser.getDoc_id(), true);
+                                            SyncReference doctorSyncReference = WilddogSync.getInstance()
+                                                    .getReference(getResources().getString(R.string.doctors_room))
+                                                    .child(mUser.getDoc_id());
+                                            doctorSyncReference.setValue(false);
+                                            doctorSyncReference.setValue(true);
                                         }
-                                    }, AboutMeFragment.class.getSimpleName());
-                        } else {
-                            Net.instance().uploadDoctorAd(mUser.getToken(), mUser.getUser_id(), output.getPath(), new Net.OnNext<Result<String>>() {
-                                        @Override
-                                        public void onNext(@NonNull Result<String> result) {
-                                            if (result.getCode() == 100) {
-                                                mUser.setAd_url(result.getData());
-                                                ObjectProvider.sharedInstance().set(mUser);
-                                                Map<String, Object> param = new HashMap<>();
-                                                param.put(mUser.getUser_id(), true);
-                                                SyncReference doctorSyncReference = WilddogSync.getInstance()
-                                                        .getReference(getResources().getString(R.string.doctors_room))
-                                                        .child(mUser.getUser_id());
-                                                doctorSyncReference.setValue(false);
-                                                doctorSyncReference.setValue(true);
-                                            }
-                                        }
-                                    },
-                                    new Net.OnError() {
-                                        @Override
-                                        public void onError(@NonNull Throwable e) {
-
-                                        }
-                                    }, AboutMeFragment.class.getSimpleName());
-                        }
+                                    }
+                                },
+                                new Net.OnError() {
+                                    @Override
+                                    public void onError(@NonNull Throwable e) {
+                                        Log.d("uploadDoctorAd", "onError: " + e);
+                                    }
+                                }, AboutMeFragment.class.getSimpleName());
                     }
                 } else if (resultCode == UCrop.RESULT_ERROR) {
 

@@ -202,7 +202,7 @@ public class VideoReceiverService extends Service implements Conversation.Listen
 
     private void uploadVideoConversationRecord() {
         long duration = System.currentTimeMillis() / 1000 - mStartTime;
-        Net.instance().uploadConversationRecord(mUser.getToken(), mUser.getUser_id(),
+        Net.instance().uploadConversationRecord(mUser.getToken(), mUser.getDoc_id(),
                 mVideoConversation.getRemoteUid(), mStartTime, duration, new Net.OnNext<Result<Object>>() {
                     @Override
                     public void onNext(@NonNull Result<Object> result) {

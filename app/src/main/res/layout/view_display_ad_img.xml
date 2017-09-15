@@ -4,11 +4,13 @@
               android:layout_height="wrap_content"
               android:paddingStart="5dp"
               android:paddingEnd="5dp"
+              android:paddingTop="5dp"
+              android:paddingBottom="5dp"
               android:orientation="vertical">
 
     <com.zd.wilddogdoctordemo.ui.View.ResizableImageView
         android:id="@+id/ad_iv"
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_horizontal"
         android:src="@drawable/banner"/>
