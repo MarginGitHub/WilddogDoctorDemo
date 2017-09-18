@@ -6,11 +6,10 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.view.MenuItem;
 
-import com.yalantis.ucrop.UCrop;
+import com.zd.wilddogdoctordemo.R;
 import com.zd.wilddogdoctordemo.adapter.VideoConversationFragmentPagerAdapter;
 import com.zd.wilddogdoctordemo.ui.BaseActivity;
 import com.zd.wilddogdoctordemo.ui.View.NoSlidingViewPaper;
-import com.zd.wilddogdoctordemo.R;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -18,10 +17,10 @@ import butterknife.ButterKnife;
 public class MainActivity extends BaseActivity {
 
 
-    @BindView(R.id.container_vp)
-    NoSlidingViewPaper mContainerVp;
-    @BindView(R.id.bootom_navigation)
-    BottomNavigationView mBootomNavigation;
+    @BindView(R.id.content)
+    NoSlidingViewPaper mContent;
+    @BindView(R.id.navigation)
+    BottomNavigationView mNavigation;
     private VideoConversationFragmentPagerAdapter mPagerAdapter;
 
     @Override
@@ -35,19 +34,19 @@ public class MainActivity extends BaseActivity {
     @Override
     protected void initViews() {
         mPagerAdapter = new VideoConversationFragmentPagerAdapter(getSupportFragmentManager());
-        mContainerVp.setAdapter(mPagerAdapter);
-        mBootomNavigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+        mContent.setAdapter(mPagerAdapter);
+        mNavigation.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
             @Override
             public boolean onNavigationItemSelected(@NonNull MenuItem item) {
                 switch (item.getItemId()) {
                     case R.id.online_doctors:
-                        mContainerVp.setCurrentItem(0);
-                    break;
+                        mContent.setCurrentItem(0);
+                        break;
                     case R.id.video_history:
-                        mContainerVp.setCurrentItem(1);
+                        mContent.setCurrentItem(1);
                         break;
                     case R.id.about_me:
-                        mContainerVp.setCurrentItem(2);
+                        mContent.setCurrentItem(2);
                         break;
 
                 }

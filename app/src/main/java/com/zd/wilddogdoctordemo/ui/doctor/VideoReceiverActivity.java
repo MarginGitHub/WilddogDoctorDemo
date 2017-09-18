@@ -11,6 +11,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
+import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
@@ -19,13 +20,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.wilddog.video.WilddogVideoView;
+import com.zd.wilddogdoctordemo.R;
 import com.zd.wilddogdoctordemo.beans.User;
 import com.zd.wilddogdoctordemo.cons.ConversationCons;
 import com.zd.wilddogdoctordemo.service.VideoReceiverService;
 import com.zd.wilddogdoctordemo.utils.GlideApp;
-import com.zd.wilddogdoctordemo.R;
-
-
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -48,7 +47,7 @@ public class VideoReceiverActivity extends AppCompatActivity implements ServiceC
     @BindView(R.id.user_nick_name)
     TextView mUserNickName;
     @BindView(R.id.accept_layout)
-    FrameLayout mAcceptLayout;
+    ConstraintLayout mAcceptLayout;
 
     private boolean onCalled = true;
     private boolean onCall;

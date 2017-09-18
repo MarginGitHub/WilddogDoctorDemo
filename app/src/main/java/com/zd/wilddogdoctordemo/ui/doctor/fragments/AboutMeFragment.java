@@ -9,7 +9,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -53,7 +52,6 @@ import butterknife.OnClick;
 import butterknife.Unbinder;
 import io.reactivex.annotations.NonNull;
 
-import static android.R.attr.path;
 import static android.app.Activity.RESULT_OK;
 
 
